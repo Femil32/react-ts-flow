@@ -29,23 +29,19 @@ export const DragableNode = ({
     event.dataTransfer.effectAllowed = "move";
   };
 
-  const { node } = useAppSelector(
-    (state) => ({
-      node: state.node
-    })
+  const { node } = useAppSelector(state => ({
+    node: state.node
+  })
   )
 
   const { nodes } = node
 
   const onClick = async (event: Event) => {
     event.preventDefault();
-    console.log(nodes)
     const newNodePosition =
       nodes.length > 0
         ? { x: nodes[0]!.position.x + 450, y: nodes[0]!.position.y }
         : { x: 100, y: 100 };
-
-    console.log('node', node)
 
     const newNode = dispatch(
       addNode({
@@ -54,9 +50,6 @@ export const DragableNode = ({
         data: {},
       })
     )
-
-    console.log('newNode', newNode);
-
 
     if (nodes.length > 0) {
       dispatch(addEdge({

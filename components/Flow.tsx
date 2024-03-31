@@ -1,23 +1,27 @@
 "use client";
 
-import { Background, Controls, MiniMap, ReactFlow } from "@xyflow/react";
+import { Background, Controls, MiniMap, Panel, ReactFlow } from "@xyflow/react";
 import { DragEvent, useCallback, useRef } from "react";
 
 import "@xyflow/react/dist/style.css";
 
-import RemoveMatch from "./nodes/Filter";
+import FilterNodeComponent from "./nodes/Filter";
 
 import { addEdge, addNode, onEdgesChange, onNodesChange, onNodesDelete, setReactFlowInstance } from "@/redux/features/nodeSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import DefaultInputComponent from "./nodes/Input/Default";
+import { Button } from "./ui/button";
+import { PlayIcon, SaveIcon } from "lucide-react";
+import reactFlowToWorkflow from "@/utils/reactFlowToWorkflow";
+import { filterData } from "@/helpers/fn";
 
 const nodeTypes = {
   // data
   "Input.default": DefaultInputComponent,
 
   // operations
-  "Filter.filter": RemoveMatch,
+  "Filter.filter": FilterNodeComponent,
 
 };
 
@@ -68,7 +72,6 @@ export default function App() {
         position,
         data: {},
       };
-      console.log('newNode', newNode);
 
       dispatch(addNode(newNode))
 
@@ -76,22 +79,34 @@ export default function App() {
     [dispatch],
   );
 
-  // async function handleRun() {
-  //   const { workflowResponse, errors } = await reactFlowToWorkflow({
-  //     nodes,
-  //     edges,
-  //   });
-  //   const runResponse = await runWorkflow(workflowResponse);
-  // }
 
-  // async function handleSave() {
-  //   const { workflowResponse, errors } = await reactFlowToWorkflow({
-  //     nodes,
-  //     edges,
-  //   });
-  //   const saveResponse = await saveWorkflow(workflowResponse);
-  //   router.push(`/flow?id=${saveResponse.id}`);
-  // }
+  async function handleRun() {
+    const { workflowResponse, errors } = await reactFlowToWorkflow({
+      nodes,
+      edges,
+      nodeState: node
+    });
+    console.log('workflowResponse', {
+      workflowResponse, errors
+    });
+    // const aa = filterData(
+
+    // )
+    // const runResponse = await runWorkflow(workflowResponse);
+    console.log('runResponse', runResponse);
+
+  }
+
+  async function handleSave() {
+    // const { workflowResponse, errors } = await reactFlowToWorkflow({
+    //   nodes,
+    //   edges,
+    // });
+
+
+    // const saveResponse = await saveWorkflow(workflowResponse);
+    // router.push(`/flow?id=${saveResponse.id}`);
+  }
 
   return (
     <div className="dndflow h-full w-full">
@@ -126,6 +141,27 @@ export default function App() {
         // selectionMode={SelectionMode.Partial}
         >
           <Controls />
+          <Panel position="top-right" className="pt-20">
+            <div className="flex flex-row items-center gap-4">
+              <Button className="flex-grow" onClick={handleSave}>
+                <SaveIcon size={16} />
+                <span>Save</span>
+              </Button>
+              <Button className="flex-grow" onClick={handleRun}>
+                <PlayIcon size={16} />
+                <span>Run</span>
+              </Button>
+              {/* <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex flex-row gap-2 bg-card bg-opacity-80 text-foreground outline outline-1 outline-slate-700 hover:bg-opacity-100 hover:text-background">
+                    <SettingsIcon size={16} className="opacity-80" />
+                    Settings
+                  </Button>
+                </DialogTrigger>
+                <SettingsDialog />
+              </Dialog> */}
+            </div>
+          </Panel>
           <MiniMap pannable zoomable />
           <Background
             color="#aaaaaa"

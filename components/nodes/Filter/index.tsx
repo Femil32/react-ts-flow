@@ -1,7 +1,7 @@
 "use client";
 
 import { Handle, Position } from "@xyflow/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { InfoIcon } from "lucide-react";
 
@@ -17,7 +17,7 @@ import Link from "next/link";
 import useBasicNodeState from "@/hooks/useBasicNodeState";
 // import Debug from "../Primitives/Debug";
 
-type PlaylistProps = {
+type CustomFilterProps = {
   id: string;
   data: any;
 };
@@ -54,7 +54,7 @@ const selectOptions = [
 
 const CustomFilter = ({
   id, data
-}: PlaylistProps) => {
+}: CustomFilterProps) => {
   const {
     state,
     isValid,
@@ -66,6 +66,23 @@ const CustomFilter = ({
     getNodeData,
     updateNodeData,
   } = useBasicNodeState(id, formSchema);
+  console.log(' id, data', id, data);
+
+  const { inputColumns, inputData } = data
+
+  const [columnOptions, setColumnOptions] = useState([])
+
+  useEffect(() => {
+
+    const options = inputColumns?.map(option => ({
+      label: option,
+      value: option,
+    }))
+    console.log('options', options);
+
+    setColumnOptions(options)
+  }, [inputColumns])
+
 
   React.useEffect(() => {
     if (data) {
@@ -135,7 +152,7 @@ const CustomFilter = ({
                   )!.label
                   : "Select an operation"
               }
-              selectOptions={selectOptions}
+              selectOptions={columnOptions}
               register={register!}
             />
             <Separator />

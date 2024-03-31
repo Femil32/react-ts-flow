@@ -1,23 +1,24 @@
-"use client";
-
 import { Handle, Position } from "@xyflow/react";
 import React from "react";
-
-
-import Image from "next/image";
 
 import { CardWithHeader } from "../Primitives/Card";
 import InputPrimitive from "../Primitives/Input";
 
 import * as z from "zod";
 
-import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 // import Debug from "../Primitives/Debug";
+import { countriesData } from "@/data/countries";
+import { ufoData } from "@/data/ufo";
 import useBasicNodeState from "@/hooks/useBasicNodeState";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { countriesData } from "@/data/countries";
 
-import { InputColumn, InputData, setInputColumns, setInputData } from "@/redux/features/fileDataSlice";
+import {
+  InputColumn,
+  InputData,
+  setInputColumns,
+  setInputData,
+} from "@/redux/features/fileDataSlice";
 
 type PlaylistProps = {
   id: string;
@@ -45,10 +46,10 @@ const selectOptions = [
   { label: "Ufo CSV", value: "ufo" },
 ];
 
-function DefaultInputComponent({ id, data }: PlaylistProps) {
+const DefaultInputComponent = ({ id, data }: PlaylistProps) => {
   const [search, setSearch] = React.useState("");
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const {
     state,
@@ -68,43 +69,42 @@ function DefaultInputComponent({ id, data }: PlaylistProps) {
 
   const { userPlaylists } = node;
 
-
   const watch = form!.watch();
 
+  const { defaultCSVinput } = watch;
+
   React.useEffect(() => {
-    const { defaultCSVinput } = watch
     let fileData = null;
     let column: InputColumn = [];
     let data: InputData = [];
     switch (defaultCSVinput) {
-      case 'countries':
-        fileData = countriesData
-        column = fileData[0]
-        data = fileData.slice(1)
+      case "countries":
+        fileData = countriesData;
+        column = fileData[0];
+        data = fileData.slice(1);
         break;
-      case 'ufo':
+      case "ufo":
+        fileData = ufoData;
+        column = fileData[0];
+        data = fileData.slice(1);
         break;
 
       default:
         break;
     }
 
-    dispatch(setInputColumns({
-      column
-    }))
+    dispatch(setInputColumns(column));
 
-    dispatch(setInputData(data))
+    dispatch(setInputData(data));
 
-  }, [dispatch, watch])
-
-
+    // dispatch(setInputData(data))
+  }, [dispatch, defaultCSVinput]);
 
   React.useEffect(() => {
     if (data) {
       form?.setValue("defaultCSVinput", "countries");
     }
   }, [data, form]);
-
 
   return (
     <CardWithHeader
@@ -125,7 +125,9 @@ function DefaultInputComponent({ id, data }: PlaylistProps) {
         style={{ background: "#555" }}
       />
       <Form {...form!}>
-        <form onSubmit={form!.handleSubmit((data) => console.log('data', data))}>
+        <form
+          onSubmit={form!.handleSubmit((data) => console.log("data", data))}
+        >
           <div className="flex flex-col gap-4">
             <InputPrimitive
               control={form!.control}
@@ -134,11 +136,9 @@ function DefaultInputComponent({ id, data }: PlaylistProps) {
               label={"Column Name"}
               placeholder={
                 watch.defaultCSVinput
-                  ? selectOptions.find(
-                    (option) => {
-                      return option.value === watch.defaultCSVinput
-                    }
-                  )!.label
+                  ? selectOptions.find((option) => {
+                    return option.value === watch.defaultCSVinput;
+                  })!.label
                   : "Select an operation"
               }
               selectOptions={selectOptions}
@@ -149,6 +149,6 @@ function DefaultInputComponent({ id, data }: PlaylistProps) {
       </Form>
     </CardWithHeader>
   );
-}
+};
 
 export default DefaultInputComponent;

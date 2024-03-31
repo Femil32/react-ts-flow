@@ -36,16 +36,14 @@ export const userInputData = createSlice({
   reducers: {
     reset: () => initialState,
     setInputColumns: (state, action) => {
-      console.log(state, action);
       const columns = action.payload;
 
       state.inputColumns = columns;
     },
     setInputData: (state, action) => {
-      console.log(state, action);
+      const data = action.payload;
 
-      // const data = action.payload;
-      // state.inputData = data;
+      state.inputData = data;
     },
     setOutputColumns: (state, action) => {
       const columns = action.payload;

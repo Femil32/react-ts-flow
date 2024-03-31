@@ -81,7 +81,6 @@ export const counter = createSlice({
     },
     onConnect: (state, action) => {
       const connection: Connection = action.payload;
-      console.log("sddsd", typeAddEdge(connection, state.edges));
       state.edges = typeAddEdge(connection, state.edges);
     },
     addNode: (state, action) => {

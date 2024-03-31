@@ -2,15 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHandleConnections } from "@xyflow/react";
 import { countriesData } from "@/data/countries";
 
-type Playlist = {
-  playlistId?: string;
-  name?: string;
-  description?: string;
-  image?: string;
-  owner?: string;
-  total?: number;
-};
-
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -21,8 +12,9 @@ import { updateNodeData } from "@/redux/features/nodeSlice";
 const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
   const dispatch = useAppDispatch();
 
-  const { node } = useAppSelector((state) => ({
+  const { node, fileData } = useAppSelector((state) => ({
     node: state.node,
+    fileData: state.fileData,
   }));
 
   const { nodes } = node;
@@ -31,6 +23,8 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
   const [state, setState] = useState({
     currentCSV: "countries",
     csvData: countriesData,
+    inputColumns: [],
+    inputData: [],
   });
 
   const form = formSchema
@@ -44,7 +38,10 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
   const { formState, register } = form ?? {};
 
   const getNodeData = useCallback(
-    (id: string) => nodes.find((node) => node.id === id)?.data,
+    (id: string) => {
+      console.log("nodes", nodes, id);
+      return nodes.find((node) => node.id === id)?.data;
+    },
     [nodes]
   );
 
@@ -58,20 +55,23 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
     nodeId: id,
   });
 
-  const total = useMemo(
-    () =>
-      Array.isArray(state.playlists)
-        ? state.playlists.reduce((acc, curr) => acc + (curr.total ?? 0), 0)
-        : 0,
-    [state.playlists]
-  );
+  const total = 30;
+  // const total = useMemo(
+  //   () =>
+  //     Array.isArray(state.csvData)
+  //       ? state.csvData.reduce((acc, curr) => acc + (curr ?? 0), 0)
+  //       : 0,
+  //   [state]
+  // );
+
   useEffect(() => {
     let invalidNodesCount = 0;
     const playlistIdsSet = new Set<string>();
-    const playlistsSet = new Set<Playlist>();
+    const playlistsSet = new Set();
 
     if (!targetConnections?.length) {
       setState({
+        ...state,
         currentCSV: "countries",
         csvData: [],
       });
@@ -80,9 +80,11 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
 
     targetConnections.forEach((connection) => {
       console.log("connection", connection);
+      console.log("connection.source", connection.source);
 
       const target = getNodeData(connection.source);
       if (!target) return;
+      console.log("target", target);
 
       const {
         playlistId,
@@ -105,41 +107,37 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
       setIsValid(hasPlaylistId || hasPlaylistIds);
 
       const playlist = { playlistId, name, description, image, owner, total };
+      console.log("playlist", playlist);
+
       playlistsSet.add(playlist);
-      playlistIdsSet.add(playlistId as string);
+      playlistIdsSet.add(playlistId);
 
       (playlistIds || []).forEach((id) => playlistIdsSet.add(id as string));
       (playlists || []).forEach((pl) => playlistsSet.add(pl as Playlist));
     });
 
-    const combinedPlaylistIds = Array.from(playlistIdsSet).filter(Boolean);
-    const combinedPlaylists = Array.from(playlistsSet)
-      .filter(Boolean)
-      .filter((playlist) => Object.keys(playlist).length !== 0)
-      .filter((playlist) => playlist.playlistId);
-
+    const { inputColumns, inputData } = fileData;
     setState({
-      playlistIds: combinedPlaylistIds,
-      playlists: combinedPlaylists,
-      invalidNodesCount,
-      summary: {
-        total,
-      },
+      inputColumns,
+      inputData,
     });
-  }, [targetConnections, getNodeData, total]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetConnections, getNodeData, total, fileData]);
 
   useEffect(() => {
     const currentNodeData = getNodeData(id);
+    console.log("currentNodeData", currentNodeData);
+
     if (
-      JSON.stringify(currentNodeData?.playlistIds) !==
-      JSON.stringify(state.playlistIds)
+      JSON.stringify(currentNodeData?.inputData) !==
+      JSON.stringify(state.inputData)
     ) {
       dispatch(
         updateNodeData({
           id,
           data: {
-            playlistIds: state.playlistIds,
-            playlists: state.playlists,
+            inputColumns: state.inputColumns,
+            inputData: state.inputData,
           },
         })
       );
@@ -150,16 +148,15 @@ const usePlaylistLogic = (id: string, formSchema?: ZodObject<any>) => {
     total,
     sourceConnections,
     id,
-    state.playlistIds,
-    state.playlists,
+    state.inputColumns,
     dispatch,
+    state.inputData,
   ]);
 
   return {
     state,
     setState,
-    isValid:
-      isValid && state.invalidNodesCount === 0 && targetConnections.length > 0,
+    isValid: 0,
     targetConnections,
     sourceConnections,
     nodeData: getNodeData(id),

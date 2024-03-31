@@ -1,6 +1,5 @@
 "use client";
 
-import { type Edge, type Node } from "@xyflow/react";
 
 // import styles from "./page.module.css";
 import { useSession } from "next-auth/react";
@@ -18,9 +17,8 @@ import {
 
 // import useSWR from "swr";
 
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/redux/hooks";
 import VirtualizedTable from "@/components/custom/VirtualizedTable";
+import { useRouter } from "next/navigation";
 
 function Builder({ searchParams }: { searchParams: any }) {
   const { data: session } = useSession();
@@ -35,49 +33,7 @@ function Builder({ searchParams }: { searchParams: any }) {
     }
   }, [session]);
 
-  // const {
-  //   setNodes,
-  //   setEdges,
-  //   setSessionStore,
-  //   sessionStore,
-  //   setUserPlaylists,
-  //   setFlowState,
-  //   reactFlowInstance,
-  // } = useAppSelector((state) => ({
-  //   setNodes: state.setNodes,
-  //   setEdges: state.setEdges,
-  //   setSessionStore: state.setSession,
-  //   sessionStore: state.session,
-  //   setUserPlaylists: state.setUserPlaylists,
-  //   setFlowState: state.setFlowState,
-  //   reactFlowInstance: state.reactFlowInstance,
-  // }));
-
-  // const {
-  //   data: workflowData,
-  //   error: workflowError,
-  //   isLoading: workflowIsLoading,
-  // } = useSWR(flowId ? `/api/workflow/${flowId}` : null, fetcher) as {
-  //   data: {
-  //     id: string;
-  //     workflow?: WorkflowObject;
-  //     userId: string;
-  //     createdAt: string;
-  //     cron?: string;
-  //   };
-  //   error: {
-  //     status: number;
-  //     info: string;
-  //   };
-  //   isLoading: boolean;
-  // };
-
   // useEffect(() => {
-  //   if (workflowData === undefined && workflowError !== undefined) {
-  //     toast.error(workflowError.info);
-  //     router.push("/flow");
-  //     return;
-  //   }
   //   if (workflowData?.workflow !== undefined) {
   //     const { name, sources, operations, connections, description } =
   //       workflowData.workflow;
@@ -135,20 +91,7 @@ function Builder({ searchParams }: { searchParams: any }) {
   //   }
   // }, [workflowData, workflowError]);
 
-  // useEffect(() => {
-  //   if (!session?.user?.providerAccountId) {
-  //     return;
-  //   }
-  //   fetch(`/api/user/${session?.user?.providerAccountId}/playlists`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setUserPlaylists(data as any[]);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }, [session?.user?.providerAccountId]);
+
   const data = [
     { name: 'Alice', age: 25, location: 'New York' },
     { name: 'Bob', age: 30, location: 'Los Angeles' },

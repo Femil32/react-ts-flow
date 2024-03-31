@@ -1,27 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { Input } from "src/components/ui/input";
-import reactFlowToWorkflow from "../utils/reactFlowToWorkflow";
+import { Input } from "@/components/ui/input";
+import reactFlowToWorkflow from "@/utils/reactFlowToWorkflow";
 
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+// import { Textarea } from "@/components/ui/textarea";
 import { useAppSelector } from "@/redux/hooks";
 import { ClockIcon, PlayIcon } from "lucide-react";
 import { useState } from "react";
 
 function RightBar() {
-  const { node } = useAppSelector(
-    (state) => ({
-      node: state.node,
-      // session: state.session,
-      // setSessionStore: state.setSession,
-      // alert: state.alert,
-      // setAlertStore: state.setAlert,
-    })
-  );
+  const { node } = useAppSelector(state => ({
+    node: state.node,
+  }));
 
   const { nodes, edges } = node
 
@@ -86,10 +79,10 @@ function RightBar() {
             <Label htmlFor="email" className="opacity-90">
               Description
             </Label>
-            <Textarea
+            {/* <Textarea
               id="email"
               placeholder="A short description for your workflow"
-            />
+            /> */}
           </div>
         </div>
       </div>

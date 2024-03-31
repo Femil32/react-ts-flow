@@ -26,7 +26,6 @@ const VirtualizedTable = (props: data) => {
   const [sortDirection, setSortDirection] = useState<SortDirectionType>(SortDirection.ASC);
 
   const sortedList = () => {
-    const sortedData = inputData
     const formatedData = []
 
     for (let i = 0; i < inputData.length; i++) {
@@ -41,8 +40,6 @@ const VirtualizedTable = (props: data) => {
 
       formatedData.push(rowObject);
     }
-
-    console.log('sortedData', sortedData);
 
     const sorted = [...formatedData].sort((a, b) => {
       if (a[sortBy] < b[sortBy]) {

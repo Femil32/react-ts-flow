@@ -14,10 +14,9 @@ import { DragableNode } from "@/components/DragableNode";
 import { useAppSelector } from "@/redux/hooks";
 import React, { useEffect, useState } from "react";
 function Sidebar() {
-  const { node } = useAppSelector(
-    (state) => ({
-      node: state.node,
-    }),
+  const { node } = useAppSelector(state => ({
+    node: state.node,
+  }),
   );
 
   const { nodes, edges, alert } = node
